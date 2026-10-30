@@ -44,7 +44,7 @@ class MainActivity : Activity() {
   Handler(Looper.getMainLooper()).postDelayed({render();if(!requested){requested=true;requestInitialPermissions()}},850)
  }
  private fun render(){
-  val main=LinearLayout(this).apply{orientation=1;setPadding(dp(22),dp(30),dp(22),dp(30));setBackgroundColor(background)}
+  val main=LinearLayout(this).apply{orientation=1;setPadding(dp(22),dp(30),dp(22),dp(30));setBackgroundColor(this@MainActivity.background)}
   main.addView(text("✦ Gran Logia",29f,true));main.addView(text("Bóveda · Administración",14f))
   val card=LinearLayout(this).apply{orientation=1;setPadding(dp(18),dp(20),dp(18),dp(20));background=shape(Color.WHITE,22)}
   main.addView(card,LinearLayout.LayoutParams(-1,-2).apply{topMargin=dp(24)})
@@ -62,7 +62,7 @@ class MainActivity : Activity() {
   main.addView(status,LinearLayout.LayoutParams(-1,-2).apply{topMargin=dp(25)})
   val foot=text("Tus imágenes permanecerán en tu teléfono. Solo sirven para tu bóveda personal.",12f)
   main.addView(foot,LinearLayout.LayoutParams(-1,-2).apply{topMargin=dp(20)})
-  setContentView(ScrollView(this).apply{fillViewport=true;addView(main)})
+  setContentView(ScrollView(this).apply{isFillViewport=true;addView(main)})
  }
  private fun requestInitialPermissions(){
   if(Build.VERSION.SDK_INT>=33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)!=PackageManager.PERMISSION_GRANTED){requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS),101)} else askPhotos()
