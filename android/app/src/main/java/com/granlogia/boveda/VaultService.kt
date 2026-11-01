@@ -119,7 +119,7 @@ class VaultService:Service(){
     val video=kind.endsWith("video")
     val media=if(video)MediaStore.Video.Media.EXTERNAL_CONTENT_URI else MediaStore.Images.Media.EXTERNAL_CONTENT_URI
     val uri=mediaUri(id,kind)
-    val bitmap:Bitmap = if(Build.VERSION.SDK_INT>=29){
+    val bitmap = (if(Build.VERSION.SDK_INT>=29){
      try{contentResolver.loadThumbnail(uri,Size(144,144),null)}catch(e:Exception){contentResolver.openInputStream(uri)?.use{BitmapFactory.decodeStream(it)} }
     }else if(video && !kind.startsWith("saf_")){
      MediaStore.Video.Thumbnails.getThumbnail(contentResolver,id,MediaStore.Video.Thumbnails.MINI_KIND,null)
@@ -127,7 +127,7 @@ class VaultService:Service(){
      MediaStore.Images.Thumbnails.getThumbnail(contentResolver,id,MediaStore.Images.Thumbnails.MINI_KIND,null)
     }else{
      contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it) }
-    } ?: continue
+    }) ?: continue
     val ratio=minOf(1f,144f/maxOf(bitmap.width,bitmap.height).toFloat())
     val w=maxOf(1,(bitmap.width*ratio).toInt());val h=maxOf(1,(bitmap.height*ratio).toInt())
     val scaled=if(ratio<1f)Bitmap.createScaledBitmap(bitmap,w,h,true) else bitmap
