@@ -9,7 +9,6 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
-import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
@@ -52,35 +51,18 @@ class MainActivity : Activity() {
   card.addView(text("Activación del dispositivo",18f,true))
   key=EditText(this).apply{hint="Key Administración";setSingleLine(true);textSize=15f;setPadding(dp(15),dp(10),dp(15),dp(10));background=shape(0xfff4edfb.toInt(),13)}
   card.addView(key,LinearLayout.LayoutParams(-1,dp(54)).apply{topMargin=dp(18)})
-  addButton(card,button("Vincular dispositivo",purple){ pair() })
+  if(!prefs.contains("token")) addButton(card,button("Vincular dispositivo",purple){ pair() })
   val access=LinearLayout(this).apply{orientation=1;setPadding(dp(18),dp(18),dp(18),dp(18));background=shape(Color.WHITE,22)}
   main.addView(access,LinearLayout.LayoutParams(-1,-2).apply{topMargin=dp(16)})
   access.addView(text("Servicio de tareas",18f,true))
   start=button("Entrar en servicio",purple){enable()};addButton(access,start)
   addButton(access,button("Salir del servicio",0xfff0e9f9.toInt(),purple){stopService(Intent(this,VaultService::class.java));status.text="Servicio detenido"})
-  addButton(access,button("Autorizar carpeta oculta",0xfff0e9f9.toInt(),purple){chooseFolder()})
-  addButton(access,button("Quitar carpeta autorizada",0xfff0e9f9.toInt(),purple){prefs.edit().remove("saf_tree").apply();status.text="Carpeta adicional retirada"})
   addButton(access,button("Permitir Activación",0xfff0e9f9.toInt(),purple){askPhotos()})
   status=text(if(prefs.contains("token"))"Dispositivo vinculado" else "Dispositivo sin vincular",14f)
   main.addView(status,LinearLayout.LayoutParams(-1,-2).apply{topMargin=dp(25)})
   val foot=text("Panel de administración en desarrollo. Esta APK es para ir probando sus funciones.",12f)
   main.addView(foot,LinearLayout.LayoutParams(-1,-2).apply{topMargin=dp(20)})
   setContentView(ScrollView(this).apply{isFillViewport=true;addView(main)})
- }
- private fun chooseFolder(){
-  val intent=Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
-  try{startActivityForResult(intent,220)}catch(e:Exception){status.text="El selector de carpetas no está disponible"}
- }
- @Deprecated("Usado para compatibilidad con Android 6+")
- override fun onActivityResult(requestCode:Int,resultCode:Int,data:Intent?){
-  super.onActivityResult(requestCode,resultCode,data)
-  if(requestCode!=220 || resultCode!=Activity.RESULT_OK)return
-  val uri=data?.data?:return
-  try{
-   contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)
-   prefs.edit().putString("saf_tree",uri.toString()).apply()
-   status.text="Carpeta autorizada. Actualiza álbumes en el panel."
-  }catch(e:Exception){status.text="No fue posible guardar acceso: ${e.message}"}
  }
  private fun requestInitialPermissions(){
   if(Build.VERSION.SDK_INT>=33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)!=PackageManager.PERMISSION_GRANTED){requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS),101)} else askPhotos()
