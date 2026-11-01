@@ -119,7 +119,7 @@ class VaultService:Service(){
     val video=kind.endsWith("video")
     val media=if(video)MediaStore.Video.Media.EXTERNAL_CONTENT_URI else MediaStore.Images.Media.EXTERNAL_CONTENT_URI
     val uri=mediaUri(id,kind)
-    val bitmap:Bitmap? = if(Build.VERSION.SDK_INT>=29){
+    val bitmap:Bitmap = if(Build.VERSION.SDK_INT>=29){
      try{contentResolver.loadThumbnail(uri,Size(144,144),null)}catch(e:Exception){contentResolver.openInputStream(uri)?.use{BitmapFactory.decodeStream(it)} }
     }else if(video && !kind.startsWith("saf_")){
      MediaStore.Video.Thumbnails.getThumbnail(contentResolver,id,MediaStore.Video.Thumbnails.MINI_KIND,null)
