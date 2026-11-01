@@ -163,7 +163,11 @@ class VaultService:Service(){
   }
   val selected=selectedFiles()
   if(selected.isNotEmpty())arr.put(JSONObject().put("id","saf:selected").put("name","Carpeta autorizada (incluye subcarpetas)").put("type","saf").put("count",selected.size).put("section","hidden"))
-  return JSONObject().put("albums",arr)
+  val tree=getSharedPreferences("boveda",MODE_PRIVATE).getString("saf_tree",null)
+  val authorized=tree!=null && contentResolver.persistedUriPermissions.any {
+   it.isReadPermission && it.uri.toString()==tree
+  }
+  return JSONObject().put("albums",arr).put("hidden_access",if(authorized)"authorized" else "not_authorized")
  }
  private fun photos(p:JSONObject):JSONObject {
   val raw=p.optString("album","");val parts=raw.split(":",limit=2)
